@@ -1,12 +1,15 @@
 #include <iostream>
 #include <cmath>
+#include <ctime>
 #include <gl\glut.h>
 
 using namespace std;
 
 GLint WinW = 800, WinH = 600;
 int step = 20;
-int X1 = 0, Y1 = 0, X2 = 10, Y2 = -4;
+int X1 = 2, Y1 = -2, X2 = 10, Y2 = 4;
+int scr = 1;
+long Time = 0, start = clock();
 
 int sign(double a) {
     if (a > 0) return 1;
@@ -34,8 +37,8 @@ void DrawDDALine(int x1, int x2, int y1, int y2) {
 
     dx = (x2 - x1) / length;
     dy = (y2 - y1) / length;
-    x = (float) x1 + 0.5 * sign(dx);
-    y = (float) y1 + 0.5 * sign(dy);
+    x = (double) x1 + 0.5 * sign(dx);
+    y = (double) y1 + 0.5 * sign(dy);
 
     for (int i = 1; i <= length; i++) {
         paintPixel(floor(x) * step, floor(y) * step, 1, 0, 1);
@@ -109,14 +112,27 @@ void DrawGrid() {
     glEnd();
 }
 
+void Idle() {
+    Time = clock();
+    if ((Time - start)/CLK_TCK > 2) {
+        scr++;
+        start = clock();
+        glutPostRedisplay();
+    }
+}
+
 void Display() {
     glClear(GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
     glPushMatrix();
     DrawGrid();
-    DrawDDALine(X1, X2, Y1, Y2);
-    DrawBrezehamLine(X1, X2, Y1, Y2);
-    realLine(X1, X2, Y1, Y2);
+
+    if (scr > 0) DrawDDALine(X1, X2, Y1, Y2);
+
+    if (scr > 1) DrawBrezehamLine(X1, X2, Y1, Y2);
+
+    if (scr > 2) realLine(X1, X2, Y1, Y2);
+
     glPopMatrix();
     glutSwapBuffers();
 }
@@ -140,6 +156,7 @@ int main(int argc, char **argv) {
     glClearColor(255, 255, 255, 255);
     glutDisplayFunc(Display);
     glutReshapeFunc(Reshape);
+    glutIdleFunc(Idle);
     glutMainLoop();
     return 0;
 }
