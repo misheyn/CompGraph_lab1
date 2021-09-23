@@ -8,11 +8,15 @@
 #include <ctime>
 #include <gl\glut.h>
 
-const GLint WinW = 830, WinH = 600;
+#define WinW 830
+#define WinH 600
 #define STEP 50
-const int X1 = 0, Y1 = 0, X2 = 100, Y2 = -100;
+#define X1 0
+#define Y1 0
+#define X2 -125
+#define Y2 200
 int scr = 1;
-long T = 0, startT = clock();
+long T, startT = clock();
 
 int sign(double a) {
     if (a > 0) return 1;
@@ -27,10 +31,27 @@ void DrawPixel(int x, int y, int Red, int Green, int Blue) {
     glBegin(GL_QUADS);
     int _x = (int)((int)(x /sizeX) * sizeX);
     int _y = (int)((int)(y / sizeY) * sizeY);
-    glVertex2d(_x, _y);
-    glVertex2d(_x + sizeX, _y);
-    glVertex2d(_x + sizeX, _y - sizeY);
-    glVertex2d(_x, _y - sizeY);
+    if (x > 0 && y > 0) {
+        glVertex2d(_x, _y);
+        glVertex2d(_x + sizeX, _y);
+        glVertex2d(_x + sizeX, _y + sizeY);
+        glVertex2d(_x, _y + sizeY);
+    } else if (x < 0 && y > 0) {
+        glVertex2d(_x, _y);
+        glVertex2d(_x - sizeX, _y);
+        glVertex2d(_x - sizeX, _y + sizeY);
+        glVertex2d(_x, _y + sizeY);
+    } else if (x > 0 && y < 0) {
+        glVertex2d(_x, _y);
+        glVertex2d(_x + sizeX, _y);
+        glVertex2d(_x + sizeX, _y - sizeY);
+        glVertex2d(_x, _y - sizeY);
+    } else {
+        glVertex2d(_x, _y);
+        glVertex2d(_x - sizeX, _y);
+        glVertex2d(_x - sizeX, _y - sizeY);
+        glVertex2d(_x, _y - sizeY);
+    }
     glEnd();
 }
 
@@ -146,11 +167,11 @@ void Display() {
     glutSwapBuffers();
 }
 
-void Reshape(GLsizei WinW, GLsizei WinH) {
-    glViewport(0, 0, WinW, WinH);
+void Reshape(GLsizei Winw, GLsizei Winh) {
+    glViewport(0, 0, Winw, Winh);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
-    glOrtho(-WinW / 2, WinW / 2, -WinH / 2, WinH / 2, 0, 1);
+    glOrtho(-Winw / 2, Winw / 2, -Winh / 2, Winh / 2, 0, 1);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }

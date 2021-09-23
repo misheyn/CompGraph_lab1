@@ -1,7 +1,7 @@
 #include <GL\glut.h>
+#define WinW 830
+#define WinH 600
 #include "Segments.h"
-
-const GLint WinW = 830, WinH = 600;
 
 int main(int argc, char **argv) {
     glutInit(&argc, argv);

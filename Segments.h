@@ -15,6 +15,6 @@ void DrawRealLine(double x1, double x2, double y1, double y2);
 void DrawGrid();
 void Idle();
 void Display();
-void Reshape(GLsizei WinW, GLsizei WinH);
+void Reshape(GLsizei Winw, GLsizei Winh);
 
 #endif //COMPGRAPH_LAB1_SEGMENTS_H
