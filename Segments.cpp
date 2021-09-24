@@ -11,10 +11,10 @@
 #define WinW 830
 #define WinH 600
 #define STEP 50
-#define X1 0
-#define Y1 0
-#define X2 -125
-#define Y2 200
+#define X1 -2
+#define Y1 -2
+#define X2 -4
+#define Y2 -10
 int scr = 1;
 long T, startT = clock();
 
@@ -25,33 +25,18 @@ int sign(double a) {
 }
 
 void DrawPixel(int x, int y, int Red, int Green, int Blue) {
-    double sizeX = (float )WinW / (float) STEP;
-    double sizeY = (float )WinH / (float) STEP;
+    double sizeX = (float) WinW / (float) STEP;
+    double sizeY = (float) WinH / (float) STEP;
     glColor3d(Red, Green, Blue);
     glBegin(GL_QUADS);
-    int _x = (int)((int)(x /sizeX) * sizeX);
-    int _y = (int)((int)(y / sizeY) * sizeY);
-    if (x > 0 && y > 0) {
-        glVertex2d(_x, _y);
-        glVertex2d(_x + sizeX, _y);
-        glVertex2d(_x + sizeX, _y + sizeY);
-        glVertex2d(_x, _y + sizeY);
-    } else if (x < 0 && y > 0) {
-        glVertex2d(_x, _y);
-        glVertex2d(_x - sizeX, _y);
-        glVertex2d(_x - sizeX, _y + sizeY);
-        glVertex2d(_x, _y + sizeY);
-    } else if (x > 0 && y < 0) {
-        glVertex2d(_x, _y);
-        glVertex2d(_x + sizeX, _y);
-        glVertex2d(_x + sizeX, _y - sizeY);
-        glVertex2d(_x, _y - sizeY);
-    } else {
-        glVertex2d(_x, _y);
-        glVertex2d(_x - sizeX, _y);
-        glVertex2d(_x - sizeX, _y - sizeY);
-        glVertex2d(_x, _y - sizeY);
-    }
+
+    double _x = x * sizeX;
+    double _y = y * sizeY;
+
+    glVertex2d(_x, _y);
+    glVertex2d(_x + sizeX, _y);
+    glVertex2d(_x + sizeX, _y + sizeY);
+    glVertex2d(_x, _y + sizeY);
     glEnd();
 }
 
@@ -68,7 +53,7 @@ void DrawCDALine(int x1, int x2, int y1, int y2) {
     x = (double) x1 + 0.5 * sign(dx);
     y = (double) y1 + 0.5 * sign(dy);
 
-    for (int i = 1; i <= length; i++) {
+    for (int i = 0; i <= length; i++) {
         DrawPixel(floor(x), floor(y), 1, 0, 1);
         x += dx;
         y += dy;
@@ -88,8 +73,9 @@ void DrawBrezehamLine(int x1, int x2, int y1, int y2) {
         swap = true;
     }
     int eps = 2 * dy - dx;
-
-    for (int i = 0; i < dx; i++) {
+    if(sx < 0) x +=sx;
+    if(sy < 0) y +=sy;
+    for (int i = 0; i <= dx; i++) {
         DrawPixel(x, y, 1, 5, 0);
         while (eps >= 0) {
             if (swap)
@@ -110,8 +96,8 @@ void DrawRealLine(double x1, double x2, double y1, double y2) {
     glLineWidth(3);
     glBegin(GL_LINES);
     glColor3d(0, 2, 0);
-    glVertex2d(x1, y1);
-    glVertex2d(x2, y2);
+    glVertex2d(x1*WinW/STEP, y1*WinH/STEP);
+    glVertex2d(x2*WinW/STEP, y2*WinH/STEP);
     glEnd();
 
 }
@@ -155,14 +141,13 @@ void Display() {
     glClear(GL_COLOR_BUFFER_BIT);
     glLoadIdentity();
     glPushMatrix();
-    DrawGrid();
 
     if (scr > 0) DrawCDALine(X1, X2, Y1, Y2);
 
     if (scr > 1) DrawBrezehamLine(X1, X2, Y1, Y2);
 
     if (scr > 2) DrawRealLine(X1, X2, Y1, Y2);
-
+    DrawGrid();
     glPopMatrix();
     glutSwapBuffers();
 }
